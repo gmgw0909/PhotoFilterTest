@@ -16,7 +16,7 @@ dependencies {
 }
 ```
 
-3. 简便写法
+### 在Activity或Fragment中开启PhotoFilter
 ```java
        PhotoFilter.from(SampleActivity.this)
                   .choose(MimeType.ofImage())          //显示类型
@@ -26,10 +26,10 @@ dependencies {
                   .maxSelectable(9)                    //最大选择多少张
                   .spanCount(4)                        //相册一行显示几张
                   .imageEngine(new Glide4Engine())     //使用Glide4作为图片加载引擎
-                  .setFilter(true)                     //开启滤镜
+                  .setFilter(true)                     //开启滤镜选择
                   .forResult(REQUEST_CODE_CHOOSE);
 
-    ##注意开启时Manifest.permission.WRITE_EXTERNAL_STORAGE权限授权
+    注意：开启时Manifest.permission.WRITE_EXTERNAL_STORAGE权限授权
 ```
 
 ### 在Activity或Fragment的onActivityResult里面接收返回的图片路径集合
@@ -44,5 +44,5 @@ dependencies {
         }
     }
 
-     ##注意requestCode == REQUEST_CODE_CHOOSE为开启PhotoFilter传入forResult方法中的参数
+     注意：requestCode == REQUEST_CODE_CHOOSE为开启PhotoFilter传入forResult方法中的参数
 ```
