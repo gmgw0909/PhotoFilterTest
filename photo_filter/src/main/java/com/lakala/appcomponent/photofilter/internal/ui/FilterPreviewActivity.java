@@ -1,6 +1,7 @@
 package com.lakala.appcomponent.photofilter.internal.ui;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -64,7 +65,8 @@ public class FilterPreviewActivity extends BasePreviewActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(FilterPreviewActivity.this, LinearLayoutManager.HORIZONTAL, false));
         mRecyclerView.setAdapter(adapter = new FilterTypeAdapter(FilterPreviewActivity.this, data));
         mButtonApply.setEnabled(true);
-        mButtonApply.setText("继续");
+        mButtonApply.setTextColor(Color.parseColor("#ffffff"));
+        mButtonApply.setText("下一步");
         mButtonApply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

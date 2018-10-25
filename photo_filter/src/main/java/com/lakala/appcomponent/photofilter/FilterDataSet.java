@@ -94,13 +94,13 @@ public class FilterDataSet {
 
     public static List<FilterInfo> initFilterData() {
         filters.clear();
-        filters.add(new FilterInfo("原图", FilterType.NORMAL, true));
-        filters.add(new FilterInfo("绮丽", FilterType.ACV_GAOLENG, false));
-        filters.add(new FilterInfo("浅滩", FilterType.ACV_QINGXIN, false));
-        filters.add(new FilterInfo("和风", FilterType.ACV_WENNUAN, false));
-        filters.add(new FilterInfo("可可", FilterType.ACV_DANHUANG, false));
-        filters.add(new FilterInfo("午后", FilterType.ACV_MORENJIAQIANG, false));
-        filters.add(new FilterInfo("留声", FilterType.ACV_AIMEI, false));
+        filters.add(new FilterInfo("原图", R.mipmap.ic_filter_1, FilterType.NORMAL, true));
+        filters.add(new FilterInfo("绮丽", R.mipmap.ic_filter_2, FilterType.ACV_GAOLENG, false));
+        filters.add(new FilterInfo("浅滩", R.mipmap.ic_filter_3, FilterType.ACV_QINGXIN, false));
+        filters.add(new FilterInfo("和风", R.mipmap.ic_filter_4, FilterType.ACV_WENNUAN, false));
+        filters.add(new FilterInfo("可可", R.mipmap.ic_filter_2, FilterType.ACV_DANHUANG, false));
+        filters.add(new FilterInfo("午后", R.mipmap.ic_filter_3, FilterType.ACV_MORENJIAQIANG, false));
+        filters.add(new FilterInfo("留声", R.mipmap.ic_filter_4, FilterType.ACV_AIMEI, false));
         return filters;
     }
 

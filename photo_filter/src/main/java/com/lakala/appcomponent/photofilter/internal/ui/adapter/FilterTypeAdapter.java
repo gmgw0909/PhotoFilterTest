@@ -2,10 +2,12 @@ package com.lakala.appcomponent.photofilter.internal.ui.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lakala.appcomponent.photofilter.R;
@@ -32,13 +34,13 @@ public class FilterTypeAdapter extends RecyclerView.Adapter<FilterTypeAdapter.My
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        holder.tv.setText(mData.get(position).name);
+        holder.iv.setImageResource(mData.get(position).imgRes);
         if (mData.get(position).isSelected) {
-            holder.tv.setBackgroundColor(Color.parseColor("#eeaaaa"));
+            holder.tv_bg.setVisibility(View.VISIBLE);
         } else {
-            holder.tv.setBackgroundColor(Color.parseColor("#aaeeee"));
+            holder.tv_bg.setVisibility(View.GONE);
         }
-        holder.tv.setOnClickListener(new View.OnClickListener() {
+        holder.iv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listener.onItemClick(position);
@@ -68,11 +70,13 @@ public class FilterTypeAdapter extends RecyclerView.Adapter<FilterTypeAdapter.My
 
     class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tv;
+        ImageView iv;
+        TextView tv_bg;
 
         public MyViewHolder(View view) {
             super(view);
-            tv = (TextView) view.findViewById(R.id.tv);
+            iv = (ImageView) view.findViewById(R.id.iv);
+            tv_bg = (TextView) view.findViewById(R.id.tv_bg);
         }
     }
 }

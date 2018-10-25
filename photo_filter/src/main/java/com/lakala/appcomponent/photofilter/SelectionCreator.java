@@ -12,11 +12,11 @@ import android.support.v4.app.Fragment;
 
 import com.lakala.appcomponent.photofilter.engine.ImageEngine;
 import com.lakala.appcomponent.photofilter.engine.impl.GlideEngine;
-import com.lakala.appcomponent.photofilter.engine.impl.PicassoEngine;
 import com.lakala.appcomponent.photofilter.filter.Filter;
 import com.lakala.appcomponent.photofilter.internal.entity.CaptureStrategy;
 import com.lakala.appcomponent.photofilter.internal.entity.SelectionSpec;
 import com.lakala.appcomponent.photofilter.listener.OnCheckedListener;
+import com.lakala.appcomponent.photofilter.listener.OnGetPathListListener;
 import com.lakala.appcomponent.photofilter.listener.OnSelectedListener;
 import com.lakala.appcomponent.photofilter.ui.PhotoFilterActivity;
 
@@ -76,8 +76,8 @@ public final class SelectionCreator {
     /**
      * Constructs a new specification builder on the context.
      *
-     * @param photoFilter   a requester context wrapper.
-     * @param mimeTypes MIME type set to select.
+     * @param photoFilter a requester context wrapper.
+     * @param mimeTypes   MIME type set to select.
      */
     SelectionCreator(PhotoFilter photoFilter, @NonNull Set<MimeType> mimeTypes, boolean mediaTypeExclusive) {
         mPhotoFilter = photoFilter;
@@ -149,7 +149,7 @@ public final class SelectionCreator {
      *
      * @param maxImageSelectable Maximum selectable count for image.
      * @param maxVideoSelectable Maximum selectable count for video.
-     * @return  {@link SelectionCreator} for fluent API.
+     * @return {@link SelectionCreator} for fluent API.
      */
     public SelectionCreator maxSelectablePerMediaType(int maxImageSelectable, int maxVideoSelectable) {
         if (maxImageSelectable < 1 || maxVideoSelectable < 1)
@@ -202,6 +202,7 @@ public final class SelectionCreator {
 
     /**
      * Determines Whether to hide top and bottom toolbar in PreView mode ,when user tap the picture
+     *
      * @param enable
      * @return {@link SelectionCreator} for fluent API.
      */
@@ -292,7 +293,6 @@ public final class SelectionCreator {
      * <p>
      * There are two built-in image engines:
      * 1. {@link GlideEngine}
-     * 2. {@link PicassoEngine}
      * And you can implement your own image engine.
      *
      * @param imageEngine {@link ImageEngine}
@@ -320,6 +320,12 @@ public final class SelectionCreator {
     @NonNull
     public SelectionCreator setOnSelectedListener(@Nullable OnSelectedListener listener) {
         mSelectionSpec.onSelectedListener = listener;
+        return this;
+    }
+
+    @NonNull
+    public SelectionCreator setOnGetPathListListener(@Nullable OnGetPathListListener listener) {
+        mSelectionSpec.onGetPathListListener = listener;
         return this;
     }
 

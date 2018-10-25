@@ -14,8 +14,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 
 import com.lakala.appcomponent.photofilter.FilterDataSet;
 import com.lakala.appcomponent.photofilter.R;
@@ -25,6 +27,7 @@ import com.lakala.appcomponent.photofilter.internal.ui.adapter.FilterTypeAdapter
 import com.lakala.appcomponent.photofilter.internal.utils.BitmapUtils;
 import com.lakala.appcomponent.photofilter.internal.utils.CameraHelper;
 import com.lakala.appcomponent.photofilter.internal.utils.PathUtils;
+import com.lakala.appcomponent.photofilter.internal.utils.Platform;
 import com.lakala.appcomponent.photofilter.ui.PhotoFilterActivity;
 
 import java.io.File;
@@ -50,13 +53,37 @@ public class CameraActivity extends AppCompatActivity implements OnClickListener
     private GLSurfaceView mGLSurfaceView;
     private RecyclerView mRecyclerView;
     private FilterTypeAdapter adapter;
-    private Bitmap bitmap;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+        if (Platform.hasKitKat()) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
         findViewById(R.id.button_capture).setOnClickListener(this);
+        findViewById(R.id.button_flash).setOnClickListener(this);
+        findViewById(R.id.button_back).setOnClickListener(this);
+        findViewById(R.id.button_capture).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (view.getId() == R.id.button_capture) {
+                            findViewById(R.id.button_capture).setScaleX((float) 0.85);
+                            findViewById(R.id.button_capture).setScaleY((float) 0.85);
+                        }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (view.getId() == R.id.button_capture) {
+                            findViewById(R.id.button_capture).setScaleX(1);
+                            findViewById(R.id.button_capture).setScaleY(1);
+                        }
+                        break;
+                }
+                return false;
+            }
+        });
         mGLSurfaceView = findViewById(R.id.surfaceView);
         mFilter = new GPUImageFilter();
         mGPUImage = new GPUImage(this);
@@ -102,6 +129,7 @@ public class CameraActivity extends AppCompatActivity implements OnClickListener
 
     @Override
     public void onClick(View v) {
+        findViewById(R.id.button_capture).setClickable(false);
         int i = v.getId();
         if (i == R.id.button_capture) {
             if (mCamera.mCameraInstance.getParameters().getFocusMode().equals(
@@ -118,6 +146,9 @@ public class CameraActivity extends AppCompatActivity implements OnClickListener
             }
         } else if (i == R.id.img_switch_camera) {
             mCamera.switchCamera();
+        } else if (i == R.id.button_back) {
+            finish();
+        } else if (i == R.id.button_flash) {
         }
     }
 

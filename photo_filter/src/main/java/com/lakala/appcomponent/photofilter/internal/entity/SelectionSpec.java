@@ -9,6 +9,7 @@ import com.lakala.appcomponent.photofilter.engine.ImageEngine;
 import com.lakala.appcomponent.photofilter.engine.impl.GlideEngine;
 import com.lakala.appcomponent.photofilter.filter.Filter;
 import com.lakala.appcomponent.photofilter.listener.OnCheckedListener;
+import com.lakala.appcomponent.photofilter.listener.OnGetPathListListener;
 import com.lakala.appcomponent.photofilter.listener.OnSelectedListener;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public final class SelectionSpec {
     public boolean hasInited;
     public boolean setFilter;
     public OnSelectedListener onSelectedListener;
+    public OnGetPathListListener onGetPathListListener;
     public boolean originalable;
     public boolean autoHideToobar;
     public int originalMaxSize;

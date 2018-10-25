@@ -1,4 +1,4 @@
-package com.lakala.photofiltertest;
+package com.lakala.appcomponent.photofilter.engine.impl;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

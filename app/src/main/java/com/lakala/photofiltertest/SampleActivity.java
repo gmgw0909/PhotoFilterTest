@@ -3,6 +3,7 @@ package com.lakala.photofiltertest;
 import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,7 +17,10 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.lakala.appcomponent.photofilter.MimeType;
 import com.lakala.appcomponent.photofilter.PhotoFilter;
+import com.lakala.appcomponent.photofilter.engine.impl.Glide4Engine;
 import com.lakala.appcomponent.photofilter.internal.entity.CaptureStrategy;
+import com.lakala.appcomponent.photofilter.listener.OnGetPathListListener;
+import com.lakala.appcomponent.photofilter.listener.OnSelectedListener;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.File;
@@ -58,13 +62,19 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
                                 case R.id.zhihu:
                                     PhotoFilter.from(SampleActivity.this)
                                             .choose(MimeType.ofImage())//显示类型
-                                            .countable(true) //选中是否显示数字
+                                            .countable(false) //选中是否显示数字
                                             .capture(true) //相机
                                             .captureStrategy(new CaptureStrategy(true, "com.lakala.photo_filter.sample.file_provider", "Photo"))//相机储存路径
                                             .maxSelectable(9) //最大选择多少张
                                             .spanCount(4) //相册一行显示几张
                                             .imageEngine(new Glide4Engine())    //使用Glide4作为图片加载引擎
-                                            .setFilter(true)      //开启滤镜
+                                            .setFilter(true)
+                                            .setOnGetPathListListener(new OnGetPathListListener() {
+                                                @Override
+                                                public void OnGetPathList(@NonNull List<String> pathList) {
+                                                    mAdapter.setData(pathList);
+                                                }
+                                            })//开启滤镜
                                             .forResult(REQUEST_CODE_CHOOSE);
                                     break;
                             }
@@ -91,7 +101,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
             if (PhotoFilter.obtainPathResult(data) != null && PhotoFilter.obtainPathResult(data).size() > 0) {
-                mAdapter.setData(PhotoFilter.obtainPathResult(data));
+//                mAdapter.setData(PhotoFilter.obtainPathResult(data));
             }
         }
     }

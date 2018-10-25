@@ -3,6 +3,7 @@ package com.lakala.appcomponent.photofilter.internal.ui;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.View;
 
 import com.lakala.appcomponent.photofilter.internal.entity.Album;
 import com.lakala.appcomponent.photofilter.internal.entity.Item;
@@ -31,6 +32,7 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
             finish();
             return;
         }
+        mRecyclerView.setVisibility(View.GONE);
         mCollection.onCreate(this, this);
         Album album = getIntent().getParcelableExtra(EXTRA_ALBUM);
         mCollection.load(album);
