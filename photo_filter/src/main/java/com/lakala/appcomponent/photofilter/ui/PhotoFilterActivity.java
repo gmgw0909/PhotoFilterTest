@@ -239,12 +239,14 @@ public class PhotoFilterActivity extends AppCompatActivity implements
             result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, data.getStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH));
             result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
             setResult(RESULT_OK, result);
+            mSpec.onGetPathListListener.OnGetPathList(data.getStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH));
             finish();
         } else if (requestCode == REQUEST_CODE_CAMERA) {
             Intent result = new Intent();
             result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, data.getStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH));
             result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
             setResult(RESULT_OK, result);
+            mSpec.onGetPathListListener.OnGetPathList(data.getStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH));
             finish();
         }
     }
