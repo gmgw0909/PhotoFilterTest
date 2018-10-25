@@ -27,22 +27,13 @@ dependencies {
                   .spanCount(4)                        //相册一行显示几张
                   .imageEngine(new Glide4Engine())     //使用Glide4作为图片加载引擎
                   .setFilter(true)                     //开启滤镜选择
+                  .setOnGetPathListListener(new OnGetPathListListener() {
+                            @Override
+                            public void OnGetPathList(@NonNull List<String> pathList) {
+                                   ...    //pathList为返回的图片路径集合
+                                   }
+                            })
                   .forResult(REQUEST_CODE_CHOOSE);
 
     注意：开启时Manifest.permission.WRITE_EXTERNAL_STORAGE权限授权
-```
-
-### 在Activity或Fragment的onActivityResult里面接收返回的图片路径集合
-```java
- @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
-            if (PhotoFilter.obtainPathResult(data) != null && PhotoFilter.obtainPathResult(data).size() > 0) {
-                mAdapter.setData(PhotoFilter.obtainPathResult(data));
-            }
-        }
-    }
-
-     注意：requestCode == REQUEST_CODE_CHOOSE为开启PhotoFilter传入forResult方法中的参数
 ```

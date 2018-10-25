@@ -68,13 +68,13 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
                                             .maxSelectable(9) //最大选择多少张
                                             .spanCount(4) //相册一行显示几张
                                             .imageEngine(new Glide4Engine())    //使用Glide4作为图片加载引擎
-                                            .setFilter(true)
+                                            .setFilter(true)//开启滤镜
                                             .setOnGetPathListListener(new OnGetPathListListener() {
                                                 @Override
                                                 public void OnGetPathList(@NonNull List<String> pathList) {
                                                     mAdapter.setData(pathList);
                                                 }
-                                            })//开启滤镜
+                                            })
                                             .forResult(REQUEST_CODE_CHOOSE);
                                     break;
                             }
