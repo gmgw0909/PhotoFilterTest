@@ -41,7 +41,6 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
     protected final SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
     protected SelectionSpec mSpec;
     protected ViewPager mPager;
-    protected RecyclerView mRecyclerView;
 
     protected PreviewPagerAdapter mAdapter;
 
@@ -93,14 +92,13 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
         mButtonApply.setOnClickListener(this);
 
         mPager = (ViewPager) findViewById(R.id.pager);
-        mRecyclerView = (RecyclerView) findViewById(R.id.filter_rv);
         mPager.addOnPageChangeListener(this);
         mAdapter = new PreviewPagerAdapter(getSupportFragmentManager(), null);
         mPager.setAdapter(mAdapter);
         mCheckView = (CheckView) findViewById(R.id.check_view);
         mCheckView.setCountable(mSpec.countable);
-        mBottomToolbar = findViewById(R.id.bottom_toolbar);
-        mTopToolbar = findViewById(R.id.top_toolbar);
+        mBottomToolbar = (FrameLayout) findViewById(R.id.bottom_toolbar);
+        mTopToolbar = (FrameLayout) findViewById(R.id.top_toolbar);
 
         mCheckView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,8 +132,8 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
             }
         });
 
-        mOriginalLayout = findViewById(R.id.originalLayout);
-        mOriginal = findViewById(R.id.original);
+        mOriginalLayout = (LinearLayout) findViewById(R.id.originalLayout);
+        mOriginal = (CheckRadioView) findViewById(R.id.original);
         mOriginalLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

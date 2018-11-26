@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -62,10 +63,10 @@ public class PhotoFilterActivity extends AppCompatActivity implements
     public static final String EXTRA_RESULT_SELECTION_PATH = "extra_result_selection_path";
     public static final String EXTRA_RESULT_SELECTION_ITEM = "extra_result_selection_item";
     public static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
-    private static final int REQUEST_CODE_PREVIEW = 23;
-    private static final int REQUEST_CODE_CAPTURE = 24;
-    private static final int REQUEST_CODE_FILTER = 25;
-    private static final int REQUEST_CODE_CAMERA = 26;
+    public static final int REQUEST_CODE_PREVIEW = 23;
+    public static final int REQUEST_CODE_CAPTURE = 24;
+    public static final int REQUEST_CODE_FILTER = 25;
+    public static final int REQUEST_CODE_CAMERA = 26;
     public static final String CHECK_STATE = "checkState";
     private final AlbumCollection mAlbumCollection = new AlbumCollection();
     private MediaStoreCompat mMediaStoreCompat;
@@ -124,8 +125,8 @@ public class PhotoFilterActivity extends AppCompatActivity implements
         mButtonApply.setOnClickListener(this);
         mContainer = findViewById(R.id.container);
         mEmptyView = findViewById(R.id.empty_view);
-        mOriginalLayout = findViewById(R.id.originalLayout);
-        mOriginal = findViewById(R.id.original);
+        mOriginalLayout = (LinearLayout) findViewById(R.id.originalLayout);
+        mOriginal = (CheckRadioView) findViewById(R.id.original);
         mOriginalLayout.setOnClickListener(this);
 
         mSelectedCollection.onCreate(savedInstanceState);
@@ -242,12 +243,35 @@ public class PhotoFilterActivity extends AppCompatActivity implements
             mSpec.onGetPathListListener.OnGetPathList(data.getStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH));
             finish();
         } else if (requestCode == REQUEST_CODE_CAMERA) {
-            Intent result = new Intent();
-            result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, data.getStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH));
-            result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-            setResult(RESULT_OK, result);
-            mSpec.onGetPathListListener.OnGetPathList(data.getStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH));
-            finish();
+//            Intent result = new Intent();
+//            result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, data.getStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH));
+//            result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+//            setResult(RESULT_OK, result);
+//            mSpec.onGetPathListListener.OnGetPathList(data.getStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH));
+//            finish();
+
+            Album album = Album.valueOf(mAlbumsAdapter.getCursor());
+            if (album.isAll() && SelectionSpec.getInstance().capture) {
+                album.addCaptureCount();
+            }
+            MediaSelectionFragment fragment = MediaSelectionFragment.newInstance(album);
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, fragment, MediaSelectionFragment.class.getSimpleName())
+                    .commitAllowingStateLoss();
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Fragment mediaSelectionFragment = getSupportFragmentManager().findFragmentByTag(
+                            MediaSelectionFragment.class.getSimpleName());
+                    if (mediaSelectionFragment instanceof MediaSelectionFragment) {
+                        ((MediaSelectionFragment) mediaSelectionFragment).getFirstItem();
+                        ((MediaSelectionFragment) mediaSelectionFragment).refreshMediaGrid();
+                    }
+                    updateBottomToolbar();
+                }
+            }, 500);
         }
     }
 
@@ -397,7 +421,7 @@ public class PhotoFilterActivity extends AppCompatActivity implements
         } else {
             mContainer.setVisibility(View.VISIBLE);
             mEmptyView.setVisibility(View.GONE);
-            Fragment fragment = MediaSelectionFragment.newInstance(album);
+            MediaSelectionFragment fragment = MediaSelectionFragment.newInstance(album);
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.container, fragment, MediaSelectionFragment.class.getSimpleName())

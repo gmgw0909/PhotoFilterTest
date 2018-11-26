@@ -104,6 +104,15 @@ public class FilterDataSet {
         return filters;
     }
 
+    public static List<FilterInfo> initFilterData(Context context, Bitmap bitmap) {
+        initFilterData();
+        List<Bitmap> bitmaps = getSmallPic(context, bitmap);
+        for (int i = 0; i < filters.size(); i++) {
+            FilterInfo info = filters.get(i);
+            info.bitmap = bitmaps.get(i);
+        }
+        return filters;
+    }
 
     public static List<Bitmap> getSmallPic(Context context, Bitmap bitmap) {
         List<Bitmap> filterBitmap = new ArrayList<>();

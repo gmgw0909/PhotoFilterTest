@@ -3,6 +3,7 @@ package com.lakala.appcomponent.photofilter.internal.entity;
 import android.content.pm.ActivityInfo;
 import android.support.annotation.StyleRes;
 
+import com.lakala.appcomponent.photofilter.BuildConfig;
 import com.lakala.appcomponent.photofilter.MimeType;
 import com.lakala.appcomponent.photofilter.R;
 import com.lakala.appcomponent.photofilter.engine.ImageEngine;
@@ -78,6 +79,8 @@ public final class SelectionSpec {
         autoHideToobar = false;
         originalMaxSize = Integer.MAX_VALUE;
         setFilter = true;
+        captureStrategy = new CaptureStrategy(true, BuildConfig.APPLICATION_ID + ".file_provider", "Photo");
+
     }
 
     public boolean singleSelectionModeEnabled() {

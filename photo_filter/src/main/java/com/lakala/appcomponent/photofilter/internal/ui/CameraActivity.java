@@ -1,6 +1,8 @@
 package com.lakala.appcomponent.photofilter.internal.ui;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
@@ -10,14 +12,15 @@ import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.lakala.appcomponent.photofilter.FilterDataSet;
 import com.lakala.appcomponent.photofilter.R;
@@ -34,6 +37,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.Policy;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,7 +48,7 @@ import jp.co.cyberagent.android.gpuimage.GPUImage;
 import jp.co.cyberagent.android.gpuimage.GPUImage.OnPictureSavedListener;
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 
-public class CameraActivity extends AppCompatActivity implements OnClickListener {
+public class CameraActivity extends Activity implements OnClickListener {
 
     private GPUImage mGPUImage;
     private CameraHelper mCameraHelper;
@@ -53,10 +57,12 @@ public class CameraActivity extends AppCompatActivity implements OnClickListener
     private GLSurfaceView mGLSurfaceView;
     private RecyclerView mRecyclerView;
     private FilterTypeAdapter adapter;
+    private String flashMode = Parameters.FLASH_MODE_OFF;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_camera);
         if (Platform.hasKitKat()) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -84,7 +90,7 @@ public class CameraActivity extends AppCompatActivity implements OnClickListener
                 return false;
             }
         });
-        mGLSurfaceView = findViewById(R.id.surfaceView);
+        mGLSurfaceView = (GLSurfaceView) findViewById(R.id.surfaceView);
         mFilter = new GPUImageFilter();
         mGPUImage = new GPUImage(this);
         mGPUImage.setGLSurfaceView(mGLSurfaceView);
@@ -93,26 +99,26 @@ public class CameraActivity extends AppCompatActivity implements OnClickListener
         mCamera = new CameraLoader();
 
         View cameraSwitchView = findViewById(R.id.img_switch_camera);
-        mRecyclerView = findViewById(R.id.filter_rv);
-        if (!SelectionSpec.getInstance().setFilter) {
-            mRecyclerView.setVisibility(View.GONE);
-        } else {
-            mRecyclerView.setVisibility(View.VISIBLE);
-        }
+        mRecyclerView = (RecyclerView) findViewById(R.id.filter_rv);
+//        if (!SelectionSpec.getInstance().setFilter) {
+//        mRecyclerView.setVisibility(View.GONE);
+//        } else {
+//            mRecyclerView.setVisibility(View.VISIBLE);
+//        //设置滤镜类型数据集合
+//        final List<FilterInfo> data = FilterDataSet.initFilterData();
+//        mRecyclerView.setLayoutManager(new LinearLayoutManager(CameraActivity.this, LinearLayoutManager.HORIZONTAL, false));
+//        mRecyclerView.setAdapter(adapter = new FilterTypeAdapter(CameraActivity.this, data));
+//        adapter.setOnItemClickListener(new FilterTypeAdapter.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(int position) {
+//                switchFilterTo(data.get(position).type);
+//            }
+//        });
+//        }
         cameraSwitchView.setOnClickListener(this);
         if (!mCameraHelper.hasFrontCamera() || !mCameraHelper.hasBackCamera()) {
             cameraSwitchView.setVisibility(View.GONE);
         }
-        //设置滤镜类型数据集合
-        final List<FilterInfo> data = FilterDataSet.initFilterData();
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(CameraActivity.this, LinearLayoutManager.HORIZONTAL, false));
-        mRecyclerView.setAdapter(adapter = new FilterTypeAdapter(CameraActivity.this, data));
-        adapter.setOnItemClickListener(new FilterTypeAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                switchFilterTo(data.get(position).type);
-            }
-        });
     }
 
     @Override
@@ -129,7 +135,6 @@ public class CameraActivity extends AppCompatActivity implements OnClickListener
 
     @Override
     public void onClick(View v) {
-        findViewById(R.id.button_capture).setClickable(false);
         int i = v.getId();
         if (i == R.id.button_capture) {
             if (mCamera.mCameraInstance.getParameters().getFocusMode().equals(
@@ -149,73 +154,28 @@ public class CameraActivity extends AppCompatActivity implements OnClickListener
         } else if (i == R.id.button_back) {
             finish();
         } else if (i == R.id.button_flash) {
+            if (flashMode.equals(Parameters.FLASH_MODE_OFF)) {
+                flashMode = Parameters.FLASH_MODE_TORCH;
+            } else {
+                flashMode = Parameters.FLASH_MODE_OFF;
+            }
+            Parameters parameters = mCamera.mCameraInstance.getParameters();
+            parameters.setFlashMode(flashMode);
+            mCamera.mCameraInstance.setParameters(parameters);
         }
     }
 
     private void takePicture() {
-//        // TODO get a size that is about the size of the screen
-
-//        Parameters parameters = mCamera.mCameraInstance.getParameters();
-//        int PreviewWidth = 0;
-//        int PreviewHeight = 0;
-//        // 选择合适的预览尺寸
-//        List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
-//        // 如果sizeList只有一个我们也没有必要做什么了，因为就他一个别无选择
-//        if (sizeList.size() > 1) {
-//            Iterator<Camera.Size> iterator = sizeList.iterator();
-//            while (iterator.hasNext()) {
-//                Camera.Size cur = iterator.next();
-//                if (cur.width >= PreviewWidth
-//                        && cur.height >= PreviewHeight) {
-//                    PreviewWidth = cur.width;
-//                    PreviewHeight = cur.height;
-//                    break;
-//                }
-//            }
-//        }
-//        parameters.setPreviewSize(PreviewWidth, PreviewHeight); // 获得摄像区域的大小
-//        parameters.setPictureSize(PreviewWidth, PreviewHeight); // 获得保存图片的大小
-//        // the best one for screen size (best fill screen)
-//        if (parameters.getSupportedFocusModes().contains(
-//                Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
-//            parameters.setFocusMode(Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-//        }
-//        mCamera.mCameraInstance.setParameters(parameters);
-
         mCamera.mCameraInstance.takePicture(null, null,
                 new Camera.PictureCallback() {
-
                     @Override
                     public void onPictureTaken(byte[] data, final Camera camera) {
-//                        bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-//                        mGPUImage.setImage(bitmap);
-//                        mGPUImage.setFilter(mFilter);
-//                        Matrix matrix = new Matrix();
-//                        matrix.setRotate(90);
-//                        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-//                        mGPUImage.saveToPictures("hjc_camera_photo",
-//                                System.currentTimeMillis() + ".jpg",
-//                                new OnPictureSavedListener() {
-//
-//                                    @Override
-//                                    public void onPictureSaved(final Uri uri) {
-//                                        Intent result = new Intent();
-//                                        ArrayList<String> pathList = new ArrayList<>();
-//                                        pathList.add(PathUtils.getPath(CameraActivity.this, uri));
-//                                        result.putStringArrayListExtra(PhotoFilterActivity.EXTRA_RESULT_SELECTION_PATH, pathList);
-//                                        setResult(RESULT_OK, result);
-//                                        finish();
-//                                    }
-//                                });
-
-
+                        findViewById(R.id.button_capture).setClickable(false);
                         final File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
                         if (pictureFile == null) {
-                            Log.d("ASDF",
-                                    "Error creating media file, check storage permissions");
+                            Log.d("ASDF", "Error creating media file, check storage permissions");
                             return;
                         }
-
                         try {
                             FileOutputStream fos = new FileOutputStream(pictureFile);
                             fos.write(data);
@@ -225,7 +185,6 @@ public class CameraActivity extends AppCompatActivity implements OnClickListener
                         } catch (IOException e) {
                             Log.d("ASDF", "Error accessing file: " + e.getMessage());
                         }
-
                         data = null;
                         Bitmap bitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath());
                         mGPUImage.setImage(bitmap);
@@ -247,13 +206,6 @@ public class CameraActivity extends AppCompatActivity implements OnClickListener
                                         finish();
                                     }
                                 });
-
-//                                Intent result = new Intent();
-//                                ArrayList<String> pathList = new ArrayList<>();
-//                                pathList.add(BitmapUtils.saveBitmap(CameraActivity.this, bp, "hjc_camera_photo_" + System.currentTimeMillis()));
-//                                result.putStringArrayListExtra(PhotoFilterActivity.EXTRA_RESULT_SELECTION_PATH, pathList);
-//                                setResult(RESULT_OK, result);
-//                                finish();
                     }
                 });
     }
@@ -319,7 +271,7 @@ public class CameraActivity extends AppCompatActivity implements OnClickListener
         }
 
         private void setUpCamera(final int id) {
-            mCameraInstance = getCameraInstance(id);
+            mCameraInstance = getCameraInstance(id);//0后置1前置
             Parameters parameters = mCameraInstance.getParameters();
             int PreviewWidth = 0;
             int PreviewHeight = 0;
@@ -345,10 +297,13 @@ public class CameraActivity extends AppCompatActivity implements OnClickListener
                     Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
                 parameters.setFocusMode(Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             }
+            if (id == 1) {//前置没有闪光等
+                flashMode = Parameters.FLASH_MODE_OFF;
+            }
+            parameters.setFlashMode(flashMode);
             mCameraInstance.setParameters(parameters);
-            // parameters.setFlashMode(Parameters.FLASH_MODE_TORCH); //开启闪光灯,支持
-            int orientation = mCameraHelper.getCameraDisplayOrientation(
-                    CameraActivity.this, mCurrentCameraId);
+
+            int orientation = mCameraHelper.getCameraDisplayOrientation(CameraActivity.this, mCurrentCameraId);
             CameraHelper.CameraInfo2 cameraInfo = new CameraHelper.CameraInfo2();
             mCameraHelper.getCameraInfo(mCurrentCameraId, cameraInfo);
             boolean flipHorizontal = cameraInfo.facing == CameraInfo.CAMERA_FACING_FRONT;

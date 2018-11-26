@@ -18,7 +18,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-@SuppressWarnings("unused")
 public class SelectedItemCollection {
 
     public static final String STATE_SELECTION = "state_selection";

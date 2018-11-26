@@ -32,7 +32,6 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
             finish();
             return;
         }
-        mRecyclerView.setVisibility(View.GONE);
         mCollection.onCreate(this, this);
         Album album = getIntent().getParcelableExtra(EXTRA_ALBUM);
         mCollection.load(album);

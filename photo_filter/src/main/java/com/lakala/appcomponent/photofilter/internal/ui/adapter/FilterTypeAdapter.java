@@ -34,7 +34,11 @@ public class FilterTypeAdapter extends RecyclerView.Adapter<FilterTypeAdapter.My
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        holder.iv.setImageResource(mData.get(position).imgRes);
+        if (mData.get(position).bitmap != null) {
+            holder.iv.setImageBitmap(mData.get(position).bitmap);
+        } else {
+            holder.iv.setImageResource(mData.get(position).imgRes);
+        }
         if (mData.get(position).isSelected) {
             holder.tv_bg.setVisibility(View.VISIBLE);
         } else {

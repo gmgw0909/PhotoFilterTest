@@ -2,8 +2,11 @@ package com.lakala.photofiltertest;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,20 +21,15 @@ import com.bumptech.glide.Glide;
 import com.lakala.appcomponent.photofilter.MimeType;
 import com.lakala.appcomponent.photofilter.PhotoFilter;
 import com.lakala.appcomponent.photofilter.engine.impl.Glide4Engine;
-import com.lakala.appcomponent.photofilter.internal.entity.CaptureStrategy;
 import com.lakala.appcomponent.photofilter.listener.OnGetPathListListener;
-import com.lakala.appcomponent.photofilter.listener.OnSelectedListener;
-import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.File;
 import java.util.List;
 
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
-
 public class SampleActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final int REQUEST_CODE_CHOOSE = 23;
+    private static final int MY_PERMISSIONS_REQUEST_CODE = 1001;
 
     private UriAdapter mAdapter;
 
@@ -47,53 +45,16 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(final View v) {
-        RxPermissions rxPermissions = new RxPermissions(this);
-        rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .subscribe(new Observer<Boolean>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(Boolean aBoolean) {
-                        if (aBoolean) {
-                            switch (v.getId()) {
-                                case R.id.zhihu:
-                                    PhotoFilter.from(SampleActivity.this)
-                                            .choose(MimeType.ofImage())//显示类型
-                                            .countable(false) //选中是否显示数字
-                                            .capture(true) //相机
-                                            .captureStrategy(new CaptureStrategy(true, "com.lakala.photo_filter.sample.file_provider", "Photo"))//相机储存路径
-                                            .maxSelectable(9) //最大选择多少张
-                                            .spanCount(4) //相册一行显示几张
-                                            .imageEngine(new Glide4Engine())    //使用Glide4作为图片加载引擎
-                                            .setFilter(true)//开启滤镜
-                                            .setOnGetPathListListener(new OnGetPathListListener() {
-                                                @Override
-                                                public void OnGetPathList(@NonNull List<String> pathList) {
-                                                    mAdapter.setData(pathList);
-                                                }
-                                            })
-                                            .forResult(REQUEST_CODE_CHOOSE);
-                                    break;
-                            }
-                        } else {
-                            Toast.makeText(SampleActivity.this, R.string.permission_request_denied, Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_CODE);
+        } else {
+            //权限已经被授予
+            openPhotoFilter();
+        }
     }
 
     @Override
@@ -105,6 +66,39 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
             }
         }
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == MY_PERMISSIONS_REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openPhotoFilter();
+            } else {
+                Toast.makeText(SampleActivity.this, R.string.permission_request_denied, Toast.LENGTH_LONG)
+                        .show();
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void openPhotoFilter() {
+        PhotoFilter.from(SampleActivity.this)
+                .choose(MimeType.ofImage())//显示类型
+                .countable(false) //选中是否显示数字
+                .capture(true) //相机
+//                                            .captureStrategy(new CaptureStrategy(true, BuildConfig.APPLICATION_ID + ".file_provider", "Photo"))//相机储存路径
+                .maxSelectable(9) //最大选择多少张
+                .spanCount(4) //相册一行显示几张
+                .imageEngine(new Glide4Engine())    //使用Glide4作为图片加载引擎
+                .setFilter(true)//开启滤镜
+                .setOnGetPathListListener(new OnGetPathListListener() {
+                    @Override
+                    public void OnGetPathList(@NonNull List<String> pathList) {
+                        mAdapter.setData(pathList);
+                    }
+                })
+                .go();
+    }
+
 
     private class UriAdapter extends RecyclerView.Adapter<UriAdapter.UriViewHolder> {
 

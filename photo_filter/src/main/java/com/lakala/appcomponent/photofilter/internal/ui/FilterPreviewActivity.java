@@ -1,6 +1,7 @@
 package com.lakala.appcomponent.photofilter.internal.ui;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import com.lakala.appcomponent.photofilter.internal.entity.FilterInfo;
 import com.lakala.appcomponent.photofilter.internal.entity.Item;
 import com.lakala.appcomponent.photofilter.internal.entity.SelectionSpec;
 import com.lakala.appcomponent.photofilter.internal.ui.adapter.FilterTypeAdapter;
+import com.lakala.appcomponent.photofilter.internal.utils.BitmapUtils;
 import com.lakala.appcomponent.photofilter.internal.utils.PathUtils;
 import com.lakala.appcomponent.photofilter.ui.PhotoFilterActivity;
 
@@ -29,9 +31,7 @@ public class FilterPreviewActivity extends BasePreviewActivity {
 
     List<Item> selected;
 
-    FilterTypeAdapter adapter;
-
-    Item currentItem;
+//    Item currentItem;
 
     List<PreviewItemFragment> fragments = new ArrayList<>();
 
@@ -43,27 +43,18 @@ public class FilterPreviewActivity extends BasePreviewActivity {
             finish();
             return;
         }
-        pageSize = findViewById(R.id.page_size);
+        pageSize = (TextView) findViewById(R.id.page_size);
         pageSize.setVisibility(View.VISIBLE);
         mCheckView.setVisibility(View.GONE);
         selected = getIntent().getParcelableArrayListExtra("extra_filter_item");
-        currentItem = selected.get(0);
+//        currentItem = selected.get(0);
         pageSize.setText("1/" + selected.size());
         fragments.clear();
         for (int i = 0; i < selected.size(); i++) {
-            fragments.add(PreviewItemFragment.newInstance(selected.get(i)));
+            fragments.add(PreviewItemFragment.newInstance(selected.get(i), true));
         }
         mAdapter.addAllFragment(fragments);
         mPager.setOffscreenPageLimit(8);
-        //设置滤镜类型数据集合
-        final List<FilterInfo> data = FilterDataSet.initFilterData();
-        if (!SelectionSpec.getInstance().setFilter) {
-            mRecyclerView.setVisibility(View.GONE);
-        } else {
-            mRecyclerView.setVisibility(View.VISIBLE);
-        }
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(FilterPreviewActivity.this, LinearLayoutManager.HORIZONTAL, false));
-        mRecyclerView.setAdapter(adapter = new FilterTypeAdapter(FilterPreviewActivity.this, data));
         mButtonApply.setEnabled(true);
         mButtonApply.setTextColor(Color.parseColor("#ffffff"));
         mButtonApply.setText("下一步");
@@ -77,6 +68,7 @@ public class FilterPreviewActivity extends BasePreviewActivity {
 //                    pathList.add(path);
                     //使用GpuImage过期方法saveToPictures去保存图片
                     final int finalI = i;
+//                    mSpec.compressSize == 0 ? fragments.get(i).bitmap : BitmapUtils.getZoomImage(fragments.get(i).bitmap, mSpec.compressSize)
                     fragments.get(i).gpuImage.saveToPictures(fragments.get(i).bitmap, "hjc_camera_photo",
                             System.currentTimeMillis() + i + ".jpg",
                             new GPUImage.OnPictureSavedListener() {
@@ -94,19 +86,13 @@ public class FilterPreviewActivity extends BasePreviewActivity {
                 }
             }
         });
-        adapter.setOnItemClickListener(new FilterTypeAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                mAdapter.currentFragment.setFilterToImage(FilterPreviewActivity.this, currentItem,
-                        FilterDataSet.createFilterForType(FilterPreviewActivity.this, data.get(position).type));
-            }
-        });
     }
 
     @Override
     public void onPageSelected(int position) {
         super.onPageSelected(position);
         pageSize.setText(position + 1 + "/" + selected.size());
-        currentItem = selected.get(position);
+//        currentItem = selected.get(position);
+
     }
 }

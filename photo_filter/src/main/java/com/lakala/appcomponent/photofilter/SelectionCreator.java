@@ -352,12 +352,26 @@ public final class SelectionCreator {
         }
 
         Intent intent = new Intent(activity, PhotoFilterActivity.class);
-
         Fragment fragment = mPhotoFilter.getFragment();
         if (fragment != null) {
             fragment.startActivityForResult(intent, requestCode);
         } else {
             activity.startActivityForResult(intent, requestCode);
+        }
+    }
+
+    public void go() {
+        Activity activity = mPhotoFilter.getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        Intent intent = new Intent(activity, PhotoFilterActivity.class);
+        Fragment fragment = mPhotoFilter.getFragment();
+        if (fragment != null) {
+            fragment.startActivity(intent);
+        } else {
+            activity.startActivity(intent);
         }
     }
 
