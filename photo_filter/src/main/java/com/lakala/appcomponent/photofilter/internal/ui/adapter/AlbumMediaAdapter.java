@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lakala.appcomponent.photofilter.R;
 import com.lakala.appcomponent.photofilter.internal.entity.Album;
@@ -50,7 +51,7 @@ public class AlbumMediaAdapter extends
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_CAPTURE) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.photo_capture_item, parent, false);
             CaptureViewHolder holder = new CaptureViewHolder(v);
@@ -58,7 +59,11 @@ public class AlbumMediaAdapter extends
                 @Override
                 public void onClick(View v) {
                     if (v.getContext() instanceof OnPhotoCapture) {
-                        ((OnPhotoCapture) v.getContext()).capture();
+                        if (mSelectedCollection.maxSelectableReached()) {
+                            Toast.makeText(parent.getContext(), "已经达到最大选择数", Toast.LENGTH_SHORT).show();
+                        } else {
+                            ((OnPhotoCapture) v.getContext()).capture();
+                        }
                     }
                 }
             });
