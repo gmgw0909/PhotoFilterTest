@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -208,6 +207,7 @@ public class PhotoFilterActivity extends AppCompatActivity implements
                     result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION_ITEM, selected);
                     result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
                     setResult(RESULT_OK, result);
+                    mSpec.onGetPathListListener.OnGetPathList(selectedPaths);
                     finish();
                 }
             } else {
@@ -351,6 +351,7 @@ public class PhotoFilterActivity extends AppCompatActivity implements
                 result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
                 result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
                 setResult(RESULT_OK, result);
+                mSpec.onGetPathListListener.OnGetPathList(selectedPaths);
                 finish();
             }
         } else if (v.getId() == R.id.originalLayout) {
