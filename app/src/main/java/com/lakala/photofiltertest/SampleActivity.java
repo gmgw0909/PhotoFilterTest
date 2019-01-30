@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide;
 import com.lakala.appcomponent.photofilter.MimeType;
 import com.lakala.appcomponent.photofilter.PhotoFilter;
 import com.lakala.appcomponent.photofilter.engine.impl.Glide4Engine;
+import com.lakala.appcomponent.photofilter.engine.impl.GlideEngine;
 import com.lakala.appcomponent.photofilter.listener.OnGetPathListListener;
 
 import java.io.File;
